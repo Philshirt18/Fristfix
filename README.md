@@ -1,17 +1,75 @@
-# fristfix
+# FristFix
 
-A new Flutter project.
+**Nie wieder wichtige Fristen verpassen.**
 
-## Getting Started
+FristFix ist eine deutsche Mobile App, mit der Nutzer wichtige Fristen speichern und sich rechtzeitig erinnern lassen können.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- 📋 Fristen manuell anlegen (Kündigungsfrist, Ablaufdatum, Termin, Geburtstag, Eigene Erinnerung)
+- 🔔 Push Notifications (90, 30, 7 und 1 Tag vorher)
+- 📅 Fristenkalender mit Monatsübersicht (Premium)
+- ☁️ Cloud Backup & Sync via Firebase
+- 🔐 Login mit Google, Apple oder E-Mail
+- 🌙 Dark Mode
+- 🇩🇪 Komplett auf Deutsch
+- 📱 iOS & Android
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Tech Stack
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Flutter** (Dart)
+- **Firebase** (Auth, Firestore)
+- **Hive** (lokale Speicherung)
+- **RevenueCat** (In-App Purchases)
+- **Provider** (State Management)
+- **flutter_local_notifications** (Push)
+
+## Architektur
+
+```
+lib/
+├── main.dart
+├── app.dart
+├── theme/          # Farben, Theme (Light/Dark)
+├── models/         # Deadline, Category, Type, Status
+├── data/           # Hive Repository, Firestore Repository
+├── services/       # Auth, Payment, Sync, Notifications
+├── providers/      # State Management
+├── screens/        # UI Screens
+├── widgets/        # Wiederverwendbare Komponenten
+└── utils/          # Hilfsfunktionen
+```
+
+## Setup
+
+```bash
+flutter pub get
+flutter run
+```
+
+### Firebase
+Firebase ist bereits konfiguriert. Für eigene Projekte:
+```bash
+flutterfire configure --project=YOUR_PROJECT
+```
+
+### Android Release Build
+```bash
+flutter build appbundle --release
+```
+
+### iOS Release Build
+```bash
+flutter build ipa --release
+```
+
+## Anbieter
+
+Philipp Schaefer  
+Cortijo las padillas 2  
+29749 Almayate, Spanien  
+E-Mail: appfactorymalaga@gmail.com
+
+## Lizenz
+
+Proprietär – Alle Rechte vorbehalten.
