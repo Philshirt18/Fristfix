@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>106497067474-l9qeho7c79dfeeaoit48k7g1iepram5s.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.106497067474-l9qeho7c79dfeeaoit48k7g1iepram5s</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>106497067474-dq21dpetrgap9og3ops92p1f718m6qoq.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBE6q4n3NPOc5Jw6IKF-y13PVVb7T8cZnA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>106497067474</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>de.fristfix.fristfix</string>
+	<key>PROJECT_ID</key>
+	<string>fristfix-app</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fristfix-app.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:106497067474:ios:35f5ec83209da16d33200b</string>
+</dict>
+</plist>

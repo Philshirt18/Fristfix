@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "106497067474",
+    "project_id": "fristfix-app",
+    "storage_bucket": "fristfix-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106497067474:android:5c4470f20019f39a33200b",
+        "android_client_info": {
+          "package_name": "de.fristfix.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "106497067474-6iv8niqns2nrudlbq4u99pjer182jkrh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqO9U0dUlZUIpBH-YC5lOOdMXPkANpP8Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "106497067474-6iv8niqns2nrudlbq4u99pjer182jkrh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "106497067474-l9qeho7c79dfeeaoit48k7g1iepram5s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.fristfix.fristfix"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106497067474:android:2a6afeb90e2c41f533200b",
+        "android_client_info": {
+          "package_name": "de.fristfix.fristfix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "106497067474-dq21dpetrgap9og3ops92p1f718m6qoq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.fristfix.fristfix",
+            "certificate_hash": "ad018dfb9dd0e56b4eebe2521e60ac444a4c59d5"
+          }
+        },
+        {
+          "client_id": "106497067474-6iv8niqns2nrudlbq4u99pjer182jkrh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqO9U0dUlZUIpBH-YC5lOOdMXPkANpP8Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "106497067474-6iv8niqns2nrudlbq4u99pjer182jkrh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "106497067474-l9qeho7c79dfeeaoit48k7g1iepram5s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.fristfix.fristfix"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
