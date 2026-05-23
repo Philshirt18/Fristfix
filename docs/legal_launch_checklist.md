@@ -32,7 +32,7 @@ Interne Checkliste für den rechtssicheren App-Launch.
 ## 4. Abo & Widerruf
 
 - [ ] Eigene Seite in der App unter Einstellungen → Rechtliches → Abo & Widerruf
-- [ ] Preis klar angegeben (6,99 €/Jahr, ggf. Einführungsangebot 4,99 €)
+- [ ] Preis klar angegeben (5,99 €/Jahr, ggf. Einführungsangebot 3,99 €)
 - [ ] Automatische Verlängerung erwähnt
 - [ ] Kündigungsweg über App Store beschrieben
 - [ ] Widerrufs- und Erstattungshinweise enthalten

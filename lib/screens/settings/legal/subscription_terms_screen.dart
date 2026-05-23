@@ -25,9 +25,9 @@ class SubscriptionTermsScreen extends StatelessWidget {
           _section(context, '1. Premium-Abo',
             'FristFix bietet ein optionales Premium-Abonnement mit erweiterten Funktionen.\n\n'
             'Der reguläre Preis beträgt:\n\n'
-            '6,99 € pro Jahr\n\n'
+            '5,99 € pro Jahr\n\n'
             'Gegebenenfalls kann ein Einführungsangebot angeboten werden, z. B.:\n\n'
-            '4,99 € im ersten Jahr, danach 6,99 € pro Jahr\n\n'
+            '3,99 € im ersten Jahr, danach 5,99 € pro Jahr\n\n'
             'Der jeweils gültige Preis wird vor dem Kauf im App Store angezeigt.'),
 
           _section(context, '2. Laufzeit und Verlängerung',

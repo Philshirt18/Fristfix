@@ -28,7 +28,7 @@ Die kostenlose Version kann auf eine bestimmte Anzahl aktiver Fristen beschränk
 
 ## 6. Preise und Zahlung
 
-Der reguläre Preis beträgt 6,99 € pro Jahr. Gegebenenfalls kann ein Einführungsangebot angeboten werden (4,99 € im ersten Jahr). Die Zahlung erfolgt über den jeweiligen App Store.
+Der reguläre Preis beträgt 5,99 € pro Jahr. Gegebenenfalls kann ein Einführungsangebot angeboten werden (3,99 € im ersten Jahr). Die Zahlung erfolgt über den jeweiligen App Store.
 
 ## 7. Laufzeit und Kündigung
 

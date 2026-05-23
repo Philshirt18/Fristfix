@@ -68,9 +68,9 @@ class TermsScreen extends StatelessWidget {
           _section(context, '6. Preise und Zahlung',
             'Der Preis für FristFix Premium wird in der App angezeigt.\n\n'
             'Geplant ist insbesondere ein Jahresabo zum Preis von:\n\n'
-            '6,99 € pro Jahr\n\n'
+            '5,99 € pro Jahr\n\n'
             'Gegebenenfalls kann ein Einführungsangebot angeboten werden, z. B.:\n\n'
-            '4,99 € im ersten Jahr, danach 6,99 € pro Jahr\n\n'
+            '3,99 € im ersten Jahr, danach 5,99 € pro Jahr\n\n'
             'Die Zahlung und Verwaltung von Abonnements erfolgt über den jeweiligen App Store, also insbesondere den Apple App Store oder Google Play.\n\n'
             'Für Abschluss, Verlängerung, Kündigung und Rückerstattung von App-Store-Abonnements gelten ergänzend die Bedingungen des jeweiligen App-Store-Anbieters.'),
 

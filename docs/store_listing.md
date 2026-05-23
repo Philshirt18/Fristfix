@@ -3,100 +3,161 @@
 ---
 
 ## App Name
-FristFix
+FristFix – Fristen & Erinnerungen
 
-## Untertitel / Kurzbeschreibung (30 Zeichen)
-Nie wieder Fristen verpassen.
+## Untertitel / Kurzbeschreibung (30 Zeichen – App Store)
+Dein Fristen-Wächter.
 
 ---
 
 ## Kurzbeschreibung (80 Zeichen – Google Play)
-Fristen speichern, rechtzeitig erinnert werden. Werbefrei & ohne Konto nutzbar.
+Kündigungsfristen, Ablaufdaten & Termine – rechtzeitig erinnert. 100% werbefrei.
 
 ---
 
 ## Vollständige Beschreibung (Deutsch)
 
-**Nie wieder wichtige Fristen verpassen.**
+Verpasste Kündigungsfrist? Abgelaufener Ausweis? Das muss nicht sein.
 
-FristFix ist dein persönlicher Fristen-Wächter für den deutschen Alltag. Speichere wichtige Fristen und lass dich rechtzeitig erinnern – bevor es teuer oder stressig wird.
+FristFix erinnert dich rechtzeitig an alle wichtigen Fristen – damit du nie wieder draufzahlst, weil ein Vertrag sich ungewollt verlängert oder ein Dokument abläuft.
 
-**Wofür du FristFix nutzen kannst:**
-• Kündigungsfristen für Handy, Strom, Versicherung & Co.
-• Ablaufdaten von Ausweis, Reisepass und Führerschein
-• TÜV-Termine und Kfz-Fristen
-• Steuertermine und Behördenfristen
-• Schul- und Kita-Anmeldungen
-• Geburtstage und persönliche Erinnerungen
-• Eigene Fristen für alles andere
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**So einfach funktioniert FristFix:**
-1. Frist eintragen – dauert unter 30 Sekunden
-2. Erinnerungen wählen – z. B. 90, 30 und 7 Tage vorher
-3. Fertig – FristFix erinnert dich rechtzeitig
+📋 DIESE FRISTEN VERGISST DU NIE WIEDER:
 
-**Das macht FristFix besonders:**
-✓ Werbefrei – keine Ablenkung, kein Tracking
-✓ Ohne Konto nutzbar – deine Daten bleiben auf deinem Gerät
-✓ Kein Vergleichsportal – wir verdienen nicht an Anbieterwechseln
-✓ Keine Anbieter-Provisionen – unabhängige Erinnerungshilfe
-✓ Optionales Cloud-Backup – Fristen beim Gerätewechsel sichern
-✓ Dark Mode – für angenehme Nutzung bei Nacht
+• Kündigungsfristen – Handy, Internet, Strom, Fitnessstudio, Versicherung
+• Ablaufdaten – Personalausweis, Reisepass, Führerschein, Aufenthaltstitel
+• TÜV & Auto – Hauptuntersuchung, Werkstatttermine
+• Steuer & Behörden – Abgabefristen, Anträge, Bescheide
+• Verträge – Mietvertrag, Probezeit, Befristung
+• Geburtstage – Familie, Freunde, Kollegen
+• Eigene Erinnerungen – für alles, was du nicht vergessen willst
 
-**FristFix Premium:**
-Für alle, die mehr als 5 aktive Fristen speichern möchten:
-• Unbegrenzt viele Fristen
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ SO EINFACH GEHT'S:
+
+1️⃣ Frist eintragen – in unter 30 Sekunden
+2️⃣ Erinnerungen wählen – 90, 30, 7 oder 1 Tag vorher
+3️⃣ Zurücklehnen – FristFix kümmert sich um den Rest
+
+Du bekommst eine Push-Nachricht, wenn es Zeit wird zu handeln. Rechtzeitig. Zuverlässig. Ohne Stress.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🛡️ WARUM FRISTFIX?
+
+✓ 100% werbefrei – keine Banner, keine Tracker, keine Ablenkung
+✓ Sofort nutzbar – ohne Registrierung, ohne Konto
+✓ Deine Daten gehören dir – alles bleibt lokal auf deinem Gerät
+✓ Unabhängig – kein Vergleichsportal, keine Anbieter-Provisionen
+✓ Übersichtlich – klares Design, intuitiv bedienbar
+✓ Dark Mode – auch nachts angenehm nutzbar
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⭐ FRISTFIX PREMIUM (optional):
+
+Die kostenlose Version reicht für den Einstieg. Wer mehr braucht:
+
+• Unbegrenzt viele aktive Fristen (kostenlos: 5)
 • Mehrere Erinnerungen pro Frist
-• Kalenderansicht aller Fristen
-• Cloud-Backup & Sync
-Nur 6,99 € pro Jahr – weniger als 60 Cent pro Monat.
+• Cloud-Backup & Synchronisierung
+• Alle zukünftigen Premium-Features inklusive
 
-FristFix ist kein Vergleichsportal, vermittelt keine Verträge und bietet keine Rechtsberatung. Die App ist eine organisatorische Erinnerungs- und Planungshilfe.
+Nur 5,99 € pro Jahr – weniger als ein Kaffee im Monat.
+Kein Abo-Zwang. Jederzeit kündbar.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 FÜR WEN IST FRISTFIX?
+
+• Für alle, die schon mal eine Kündigungsfrist verpasst haben
+• Für alle, die vor dem abgelaufenen Ausweis am Flughafen standen
+• Für alle, die einfach einen Ort für alle wichtigen Fristen brauchen
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FristFix ist eine organisatorische Erinnerungshilfe – kein Vergleichsportal und keine Rechtsberatung. Die Verantwortung für die Einhaltung von Fristen liegt beim Nutzer.
+
+Fragen oder Feedback? Schreib uns: appfactorymalaga@gmail.com
 
 ---
 
 ## Vollständige Beschreibung (Englisch)
 
-**Never miss an important deadline again.**
+Missed a cancellation deadline? Expired passport? It doesn't have to be that way.
 
-FristFix is your personal deadline tracker for everyday life. Save important deadlines and get reminded in time – before things get expensive or stressful.
+FristFix reminds you of all your important deadlines – so you never pay extra because a contract auto-renewed or a document expired.
 
-**What you can use FristFix for:**
-• Cancellation deadlines for phone contracts, insurance & more
-• Expiry dates for ID cards, passports and driving licenses
-• Vehicle inspection (TÜV) and car-related deadlines
-• Tax deadlines and government appointments
-• School and kindergarten registrations
-• Birthdays and personal reminders
-• Custom reminders for everything else
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**How FristFix works:**
-1. Add a deadline – takes less than 30 seconds
-2. Choose reminders – e.g. 90, 30 and 7 days before
-3. Done – FristFix reminds you in time
+📋 NEVER FORGET THESE DEADLINES AGAIN:
 
-**What makes FristFix special:**
-✓ Ad-free – no distractions, no tracking
-✓ Works without an account – your data stays on your device
-✓ Not a comparison portal – we don't earn from provider switches
-✓ Optional cloud backup – restore deadlines on a new device
-✓ Dark Mode support
+• Cancellation periods – phone, internet, insurance, gym memberships
+• Expiry dates – ID cards, passports, driving licenses, permits
+• Vehicle inspections – MOT, service appointments
+• Tax & government – filing deadlines, applications, permits
+• Contracts – lease agreements, probation periods
+• Birthdays – family, friends, colleagues
+• Custom reminders – for anything you don't want to forget
 
-**FristFix Premium:**
-For those who need more than 5 active deadlines:
-• Unlimited deadlines
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ HOW IT WORKS:
+
+1️⃣ Add a deadline – takes less than 30 seconds
+2️⃣ Choose reminders – 90, 30, 7 or 1 day before
+3️⃣ Relax – FristFix takes care of the rest
+
+You'll get a push notification when it's time to act. On time. Reliable. Stress-free.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🛡️ WHY FRISTFIX?
+
+✓ 100% ad-free – no banners, no trackers, no distractions
+✓ No account required – works instantly, no sign-up needed
+✓ Your data stays yours – everything is stored locally on your device
+✓ Independent – not a comparison site, no affiliate commissions
+✓ Clean design – intuitive and easy to use
+✓ Dark Mode – comfortable to use at night
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⭐ FRISTFIX PREMIUM (optional):
+
+The free version is enough to get started. For power users:
+
+• Unlimited active deadlines (free: 5)
 • Multiple reminders per deadline
-• Calendar view of all deadlines
 • Cloud backup & sync
-Only €6.99 per year – less than 60 cents per month.
+• All future premium features included
+
+Only €5.99 per year – less than a coffee per month.
+No commitment. Cancel anytime.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 WHO IS FRISTFIX FOR?
+
+• Anyone who's ever missed a cancellation deadline
+• Anyone who's stood at the airport with an expired ID
+• Anyone who just needs one place for all important deadlines
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FristFix is an organizational reminder tool – not a comparison site or legal advice. Responsibility for meeting deadlines remains with the user.
+
+Questions or feedback? Write us: appfactorymalaga@gmail.com
 
 ---
 
 ## Keywords (App Store – 100 Zeichen max)
-Fristen,Kündigung,Erinnerung,Ausweis,TÜV,Versicherung,Steuer,Kalender,Reminder,Deadline
+Fristen,Kündigung,Erinnerung,Ablaufdatum,TÜV,Versicherung,Vertrag,Termin,Deadline,Reminder
 
 ## Keywords (Google Play – Tags)
-Fristen-App, Kündigungsfrist, Erinnerung, Deadline, Ausweis, TÜV, Versicherung, Steuer, Kalender, Reminder, Fristenkalender, Kündigung, Vertragsende
+Fristen, Kündigungsfrist, Erinnerung, Deadline, Ablaufdatum, TÜV, Versicherung, Vertrag, Fristenkalender, Kündigung, Vertragsende, Ausweis, Reisepass, Terminplaner
 
 ---
 
@@ -121,11 +182,11 @@ mailto:appfactorymalaga@gmail.com
 
 ## App Store Preis
 - Kostenlos (mit In-App-Kauf)
-- In-App-Kauf: FristFix Premium – 6,99 € / Jahr
+- In-App-Kauf: FristFix Premium – 5,99 € / Jahr
 
 ## Google Play Preis
 - Kostenlos (mit Abo)
-- Abo: FristFix Premium – 6,99 € / Jahr
+- Abo: FristFix Premium – 5,99 € / Jahr
 
 ---
 

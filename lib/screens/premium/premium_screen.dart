@@ -110,7 +110,7 @@ class PremiumScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Danach 6,99 € pro Jahr.',
+                      'Danach 5,99 € pro Jahr.',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.mutedOf(context),
@@ -118,7 +118,7 @@ class PremiumScreen extends StatelessWidget {
                     ),
                   ] else ...[
                     Text(
-                      '6,99 € pro Jahr',
+                      '5,99 € pro Jahr',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -189,8 +189,8 @@ class PremiumScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             appState.introOfferEnabled
-              ? 'Einführungsangebot: 4,99 € im ersten Jahr. Danach 6,99 € pro Jahr. Das Abo verlängert sich automatisch, sofern es nicht rechtzeitig im jeweiligen App Store gekündigt wird.'
-              : '6,99 € pro Jahr. Das Abo verlängert sich automatisch, sofern es nicht rechtzeitig im jeweiligen App Store gekündigt wird.',
+              ? 'Einführungsangebot: 3,99 € im ersten Jahr. Danach 5,99 € pro Jahr. Das Abo verlängert sich automatisch, sofern es nicht rechtzeitig im jeweiligen App Store gekündigt wird.'
+              : '5,99 € pro Jahr. Das Abo verlängert sich automatisch, sofern es nicht rechtzeitig im jeweiligen App Store gekündigt wird.',
             style: TextStyle(fontSize: 11, color: AppColors.mutedOf(context), height: 1.4),
             textAlign: TextAlign.center,
           ),

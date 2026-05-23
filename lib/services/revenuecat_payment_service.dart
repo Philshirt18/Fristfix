@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -6,11 +7,11 @@ import 'payment_service.dart';
 
 /// RevenueCat payment service implementation.
 ///
-/// API Key: test_lzYZJEmEMHdiuymobcdHQFDprJR
-/// Entitlement: "premium"
+/// Entitlement: "Fristfix Pro"
 /// Product: fristfix_premium_yearly
 class RevenueCatPaymentService implements PaymentService {
-  static const String _apiKey = 'test_lzYZJEmEMHdiuymobcdHQFDprJR';
+  static const String _googleApiKey = 'goog_IslOWNckkOdiInQtXcATEIjDxVV';
+  static const String _appleApiKey = 'appl_MsIdePmVYdACClcfVjHXgauBODD';
   static const String _entitlementId = 'Fristfix Pro';
 
   bool _isPremium = false;
@@ -25,18 +26,13 @@ class RevenueCatPaymentService implements PaymentService {
       return;
     }
 
-    // TODO: Enable RevenueCat once App Store / Play Store products are configured
-    // For now, skip initialization to prevent app freezing
-    _initialized = false;
-    return;
-
-    /*
     try {
       await Purchases.setLogLevel(LogLevel.debug);
 
-      PurchasesConfiguration config = PurchasesConfiguration(_apiKey);
+      final apiKey = Platform.isIOS ? _appleApiKey : _googleApiKey;
+      PurchasesConfiguration config = PurchasesConfiguration(apiKey);
       if (userId != null) {
-        config = PurchasesConfiguration(_apiKey)..appUserID = userId;
+        config = PurchasesConfiguration(apiKey)..appUserID = userId;
       }
 
       await Purchases.configure(config);
@@ -55,7 +51,6 @@ class RevenueCatPaymentService implements PaymentService {
       // RevenueCat init failed – app continues with free tier
       _initialized = false;
     }
-    */
   }
 
   @override

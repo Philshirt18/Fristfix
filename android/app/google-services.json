@@ -50,6 +50,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "106497067474-0sq02oc0ui3vd11s0evddfhhmitbbcle.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.fristfix.fristfix",
+            "certificate_hash": "c7f91cef1bee6e0de44e038fe145e438d7c0952d"
+          }
+        },
+        {
           "client_id": "106497067474-dq21dpetrgap9og3ops92p1f718m6qoq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

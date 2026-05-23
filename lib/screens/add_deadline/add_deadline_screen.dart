@@ -561,7 +561,7 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
       onTap: () async {
         final picked = await showDatePicker(
           context: context,
-          initialDate: date ?? DateTime.now().add(const Duration(days: 30)),
+          initialDate: date ?? DateTime.now(),
           firstDate: DateTime(2020),
           lastDate: DateTime(2040),
           locale: const Locale('de', 'DE'),
