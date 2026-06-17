@@ -4,6 +4,8 @@ import '../../theme/app_colors.dart';
 import '../../models/deadline_type.dart';
 import '../../models/deadline_category.dart';
 import '../../models/deadline_suggestion.dart';
+import '../../models/recurrence.dart';
+import '../../models/reminder.dart';
 import '../../providers/deadline_provider.dart';
 import '../../providers/app_state_provider.dart';
 import '../../widgets/app_card.dart';
@@ -11,6 +13,8 @@ import '../../widgets/primary_button.dart';
 import '../../widgets/premium_paywall.dart';
 import '../../widgets/signup_prompt_card.dart';
 import '../../widgets/premium_hint_card.dart';
+import '../../widgets/recurrence_selector.dart';
+import '../../widgets/reminder_selector.dart';
 import '../../utils/date_utils.dart';
 
 class AddDeadlineScreen extends StatefulWidget {
@@ -43,8 +47,18 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
   final _notesController = TextEditingController();
   DateTime? _dueDate;
   DateTime? _contractEndDate;
-  final Set<int> _selectedReminders = {90, 30, 7};
   bool _showConfirmation = false;
+
+  // Recurrence state
+  RecurrenceType _recurrence = RecurrenceType.none;
+  CustomRecurrence? _customRecurrence;
+
+  // Reminder state (new flexible system)
+  List<Reminder> _selectedFlexibleReminders = [
+    Reminder.fromDaysBefore(90),
+    Reminder.fromDaysBefore(30),
+    Reminder.fromDaysBefore(7),
+  ];
 
   // Post-save prompt state
   bool _showSignupAfterSave = false;
@@ -70,7 +84,7 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
   }
 
   void _nextStep() {
-    if (_step < 2) {
+    if (_step < 3) {
       setState(() => _step++);
     }
   }
@@ -94,12 +108,17 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
     if (!appState.canAddNewDeadline(activeCount)) {
       final result = await PremiumPaywall.show(context);
       if (result != true) {
-        // User dismissed or purchase failed – don't save
         return;
       }
-      // Premium was activated inside the paywall – continue saving
       if (!mounted) return;
     }
+
+    // Convert flexible reminders to legacy format for backward compat
+    final legacyReminders = _selectedFlexibleReminders
+        .where((r) => r.daysBefore != null)
+        .map((r) => r.daysBefore!)
+        .toList()
+      ..sort((a, b) => b.compareTo(a));
 
     await provider.addDeadline(
       title: _nameController.text,
@@ -111,18 +130,19 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
       dueDate: _dueDate!,
       contractEndDate: _contractEndDate,
       notes: _notesController.text.isEmpty ? null : _notesController.text,
-      reminders: _selectedReminders.toList()..sort((a, b) => b.compareTo(a)),
+      reminders: legacyReminders.isNotEmpty ? legacyReminders : const [30, 7],
+      flexibleReminders: _selectedFlexibleReminders,
+      recurrence: _recurrence,
+      customRecurrence: _customRecurrence,
     );
 
     // Check post-save prompts
     final newActiveCount = provider.activeDeadlineCount;
 
-    // Signup prompt at 3 active
     if (appState.shouldShowSignupPrompt(newActiveCount)) {
       _showSignupAfterSave = true;
     }
 
-    // Premium hint at 5 active
     if (appState.shouldShowPremiumHint(newActiveCount)) {
       _showPremiumHintAfterSave = true;
     }
@@ -140,7 +160,13 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
       _notesController.clear();
       _dueDate = null;
       _contractEndDate = null;
-      _selectedReminders.addAll({90, 30, 7});
+      _recurrence = RecurrenceType.none;
+      _customRecurrence = null;
+      _selectedFlexibleReminders = [
+        Reminder.fromDaysBefore(90),
+        Reminder.fromDaysBefore(30),
+        Reminder.fromDaysBefore(7),
+      ];
       _showConfirmation = false;
       _showSignupAfterSave = false;
       _showPremiumHintAfterSave = false;
@@ -169,7 +195,9 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
       case 1:
         return _buildForm();
       case 2:
-        return _buildReminderSelection();
+        return _buildRecurrenceAndReminders();
+      case 3:
+        return _buildSummary();
       default:
         return const SizedBox();
     }
@@ -247,76 +275,6 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
           Icon(Icons.chevron_right, color: AppColors.mutedOf(context)),
         ],
       ),
-    );
-  }
-
-  Widget _buildCategorySelection() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        Text(
-          'Worum geht es?',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textOf(context),
-          ),
-        ),
-        const SizedBox(height: 24),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: DeadlineCategory.values.map((category) {
-            final isSelected = _selectedCategory == category;
-            return GestureDetector(
-              onTap: () {
-                setState(() => _selectedCategory = category);
-                _nextStep();
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primaryLightOf(context)
-                      : AppColors.cardOf(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color:
-                        isSelected ? AppColors.primaryOf(context) : AppColors.dividerOf(context),
-                    width: isSelected ? 2 : 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      category.icon,
-                      size: 20,
-                      color: isSelected
-                          ? AppColors.primaryOf(context)
-                          : AppColors.mutedOf(context),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      category.label,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w500,
-                        color: isSelected
-                            ? AppColors.primaryOf(context)
-                            : AppColors.textOf(context),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
     );
   }
 
@@ -515,12 +473,6 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
           maxLines: 3,
           textInputAction: TextInputAction.done,
         ),
-        const SizedBox(height: 12),
-        Text(
-          'Erinnerungen basieren auf deinen Eingaben.',
-          style: TextStyle(fontSize: 12, color: AppColors.mutedOf(context)),
-          textAlign: TextAlign.center,
-        ),
         const SizedBox(height: 32),
         PrimaryButton(
           label: 'Weiter',
@@ -583,8 +535,9 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
                 date != null ? AppDateUtils.formatDate(date) : hint,
                 style: TextStyle(
                   fontSize: 15,
-                  color:
-                      date != null ? AppColors.textOf(context) : AppColors.mutedOf(context),
+                  color: date != null
+                      ? AppColors.textOf(context)
+                      : AppColors.mutedOf(context),
                 ),
               ),
             ),
@@ -599,12 +552,16 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
     );
   }
 
-  Widget _buildReminderSelection() {
+  /// Step 2: Recurrence + Reminders combined on one screen.
+  Widget _buildRecurrenceAndReminders() {
+    final appState = context.watch<AppStateProvider>();
+    final isPremium = appState.isPremium;
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
         Text(
-          'Wann sollen wir dich erinnern?',
+          'Wiederholung & Erinnerungen',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w800,
@@ -613,45 +570,83 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Empfohlen für Verträge und Kündigungen.',
+          'Stelle ein, wie oft die Frist wiederkehrt und wann wir dich erinnern sollen.',
           style: TextStyle(
             fontSize: 15,
             color: AppColors.mutedOf(context),
           ),
         ),
         const SizedBox(height: 24),
-        _buildReminderCheckbox(90, '90 Tage vorher'),
-        _buildReminderCheckbox(30, '30 Tage vorher'),
-        _buildReminderCheckbox(7, '7 Tage vorher'),
-        _buildReminderCheckbox(1, '1 Tag vorher'),
-        const SizedBox(height: 16),
+
+        // Recurrence section
+        RecurrenceSelector(
+          selected: _recurrence,
+          customRecurrence: _customRecurrence,
+          isPremium: isPremium,
+          onChanged: (type) => setState(() => _recurrence = type),
+          onCustomChanged: (custom) =>
+              setState(() => _customRecurrence = custom),
+          onPremiumTap: widget.onOpenPremium,
+        ),
+
+        const SizedBox(height: 28),
         const Divider(),
-        const SizedBox(height: 16),
-        InkWell(
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Eigene Erinnerungen kommen mit Premium.'),
-                behavior: SnackBarBehavior.floating,
+        const SizedBox(height: 20),
+
+        // Reminder section
+        ReminderSelector(
+          selectedReminders: _selectedFlexibleReminders,
+          isPremium: isPremium,
+          onChanged: (reminders) =>
+              setState(() => _selectedFlexibleReminders = reminders),
+          onPremiumTap: widget.onOpenPremium,
+        ),
+
+        const SizedBox(height: 32),
+        PrimaryButton(
+          label: 'Weiter zur Übersicht',
+          onPressed: _nextStep,
+        ),
+        const SizedBox(height: 40),
+      ],
+    );
+  }
+
+  /// Step 3: Summary before saving.
+  Widget _buildSummary() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Text(
+          'Zusammenfassung',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textOf(context),
+          ),
+        ),
+        const SizedBox(height: 24),
+        AppCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _summaryRow('Name', _nameController.text),
+              if (_providerController.text.isNotEmpty)
+                _summaryRow('Anbieter', _providerController.text),
+              if (_dueDate != null)
+                _summaryRow('Datum', AppDateUtils.formatDate(_dueDate!)),
+              if (_selectedType != null)
+                _summaryRow('Typ', _selectedType!.label),
+              _summaryRow('Wiederholung', _recurrenceLabel),
+              _summaryRow(
+                'Erinnerungen',
+                _selectedFlexibleReminders.isEmpty
+                    ? 'Keine'
+                    : _selectedFlexibleReminders
+                        .map((r) => r.label)
+                        .join(', '),
               ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              children: [
-                Icon(Icons.add, color: AppColors.primaryOf(context)),
-                const SizedBox(width: 12),
-                Text(
-                  'Eigene Erinnerung hinzufügen',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: AppColors.primaryOf(context),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
         ),
         const SizedBox(height: 32),
@@ -659,57 +654,55 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
           label: 'Frist speichern',
           onPressed: _saveDeadline,
         ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: OutlinedButton(
+            onPressed: _prevStep,
+            child: const Text('Zurück'),
+          ),
+        ),
         const SizedBox(height: 40),
       ],
     );
   }
 
-  Widget _buildReminderCheckbox(int days, String label) {
-    final isSelected = _selectedReminders.contains(days);
+  String get _recurrenceLabel {
+    if (_recurrence == RecurrenceType.none) return 'Einmalig';
+    if (_recurrence == RecurrenceType.custom && _customRecurrence != null) {
+      return _customRecurrence!.label;
+    }
+    return _recurrence.label;
+  }
+
+  Widget _summaryRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            if (isSelected) {
-              _selectedReminders.remove(days);
-            } else {
-              _selectedReminders.add(days);
-            }
-          });
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.primaryLightOf(context)
-                : AppColors.cardOf(context),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? AppColors.primaryOf(context) : AppColors.dividerOf(context),
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.mutedOf(context),
+              ),
             ),
           ),
-          child: Row(
-            children: [
-              Icon(
-                isSelected
-                    ? Icons.check_box
-                    : Icons.check_box_outline_blank,
-                color: isSelected ? AppColors.primaryOf(context) : AppColors.mutedOf(context),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textOf(context),
               ),
-              const SizedBox(width: 12),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: AppColors.textOf(context),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -745,7 +738,9 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Wir erinnern dich rechtzeitig.',
+          _recurrence != RecurrenceType.none
+              ? 'Wiederkehrende Frist gespeichert. Wir erinnern dich rechtzeitig.'
+              : 'Wir erinnern dich rechtzeitig.',
           style: TextStyle(
             fontSize: 15,
             color: AppColors.mutedOf(context),
@@ -774,10 +769,27 @@ class _AddDeadlineScreenState extends State<AddDeadlineScreen> {
                   ),
                 ),
               ],
-              if (_selectedReminders.isNotEmpty) ...[
+              if (_recurrence != RecurrenceType.none) ...[
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.repeat, size: 14, color: AppColors.primaryOf(context)),
+                    const SizedBox(width: 4),
+                    Text(
+                      _recurrenceLabel,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.primaryOf(context),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              if (_selectedFlexibleReminders.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 Text(
-                  'Erinnerungen: ${AppDateUtils.reminderText(_selectedReminders.toList())}',
+                  'Erinnerungen: ${_selectedFlexibleReminders.map((r) => r.label).join(', ')}',
                   style: TextStyle(
                     fontSize: 14,
                     color: AppColors.mutedOf(context),

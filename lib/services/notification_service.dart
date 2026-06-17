@@ -4,12 +4,16 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import '../models/deadline.dart';
+import '../models/reminder.dart';
+import '../services/recurrence_service.dart';
 
 /// Handles local notifications for deadline reminders.
-/// Schedules notifications at 9:00 AM on the reminder date.
+/// Supports both legacy (days-before) and new flexible reminders.
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+
+  final RecurrenceService _recurrenceService = const RecurrenceService();
 
   bool _initialized = false;
   bool _permissionGranted = false;
@@ -66,7 +70,6 @@ class NotificationService {
             AndroidFlutterLocalNotificationsPlugin>();
     if (androidPlugin != null) {
       final granted = await androidPlugin.requestNotificationsPermission();
-      // On Android < 13, this returns null – notifications are allowed by default
       _permissionGranted = granted ?? true;
     }
 
@@ -91,32 +94,24 @@ class NotificationService {
     return _permissionGranted;
   }
 
-  /// Schedule reminders for a deadline based on its reminder days.
-  /// Notifications fire at 9:00 AM on the reminder date.
+  /// Schedule reminders for a deadline using the new flexible reminder system.
+  /// Falls back to legacy days-before if no flexible reminders are set.
   Future<void> scheduleDeadlineReminders(Deadline deadline) async {
     if (!_initialized || !_permissionGranted) return;
     if (deadline.isCompleted || deadline.isArchived) return;
 
-    for (final daysBefore in deadline.reminders) {
-      final reminderDate = deadline.dueDate.subtract(
-        Duration(days: daysBefore),
-      );
+    final reminderDates = _recurrenceService.calculateReminderDates(deadline);
 
-      // Schedule at 9:00 AM
-      final scheduledDate = DateTime(
-        reminderDate.year,
-        reminderDate.month,
-        reminderDate.day,
-        9,
-        0,
-      );
-
-      // Don't schedule in the past
+    for (int i = 0; i < reminderDates.length; i++) {
+      final scheduledDate = reminderDates[i];
       if (scheduledDate.isBefore(DateTime.now())) continue;
 
-      final id = _notificationId(deadline.id, daysBefore);
+      final id = _notificationIdForIndex(deadline.id, i);
       final title = deadline.title;
-      final body = _buildBody(deadline, daysBefore);
+      final body = _buildBodyFromReminder(
+        deadline,
+        deadline.effectiveReminders[i],
+      );
 
       await _scheduleNotification(
         id: id,
@@ -136,9 +131,9 @@ class NotificationService {
     );
     if (dueDateTime.isAfter(DateTime.now())) {
       await _scheduleNotification(
-        id: _notificationId(deadline.id, 0),
+        id: _notificationIdForIndex(deadline.id, 999),
         title: deadline.title,
-        body: '${deadline.type.label} ist heute fällig.',
+        body: _dueDateBody(deadline),
         scheduledDate: dueDateTime,
       );
     }
@@ -148,11 +143,18 @@ class NotificationService {
   Future<void> cancelAllRemindersForDeadline(Deadline deadline) async {
     if (!_initialized) return;
 
-    for (final daysBefore in deadline.reminders) {
-      await _plugin.cancel(_notificationId(deadline.id, daysBefore));
+    // Cancel flexible reminders (indices 0..max)
+    for (int i = 0; i < 20; i++) {
+      await _plugin.cancel(_notificationIdForIndex(deadline.id, i));
     }
-    // Also cancel the due-date notification
-    await _plugin.cancel(_notificationId(deadline.id, 0));
+    // Cancel due-date notification
+    await _plugin.cancel(_notificationIdForIndex(deadline.id, 999));
+
+    // Also cancel legacy format notifications
+    for (final daysBefore in deadline.reminders) {
+      await _plugin.cancel(_legacyNotificationId(deadline.id, daysBefore));
+    }
+    await _plugin.cancel(_legacyNotificationId(deadline.id, 0));
   }
 
   /// Cancel a single reminder.
@@ -190,7 +192,8 @@ class NotificationService {
       presentBadge: true,
       presentSound: true,
     );
-    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    const details =
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _plugin.show(
       99999,
@@ -202,36 +205,30 @@ class NotificationService {
 
   // --- Private helpers ---
 
-  int _notificationId(String deadlineId, int daysBefore) {
+  int _notificationIdForIndex(String deadlineId, int index) {
+    return '${deadlineId}_idx_$index'.hashCode.abs() % 2147483647;
+  }
+
+  int _legacyNotificationId(String deadlineId, int daysBefore) {
     return '${deadlineId}_$daysBefore'.hashCode.abs() % 2147483647;
   }
 
-  String _buildBody(Deadline deadline, int daysBefore) {
+  String _buildBodyFromReminder(Deadline deadline, Reminder reminder) {
     final typeLabel = deadline.type.label;
+    final label = reminder.label;
 
-    if (daysBefore >= 90) {
-      return '$typeLabel in 3 Monaten. Frühzeitig prüfen.';
+    if (deadline.isRecurring) {
+      return '$typeLabel: $label (${deadline.recurrenceLabel})';
     }
-    if (daysBefore >= 60) {
-      return '$typeLabel in 2 Monaten.';
+    return '$typeLabel: $label';
+  }
+
+  String _dueDateBody(Deadline deadline) {
+    final typeLabel = deadline.type.label;
+    if (deadline.isRecurring) {
+      return '$typeLabel ist heute fällig. (${deadline.recurrenceLabel})';
     }
-    if (daysBefore >= 30) {
-      final months = daysBefore ~/ 30;
-      return '$typeLabel in ${months == 1 ? "1 Monat" : "$months Monaten"}.';
-    }
-    if (daysBefore == 14) {
-      return '$typeLabel in 2 Wochen.';
-    }
-    if (daysBefore == 7) {
-      return 'Bitte prüfen: $typeLabel in 7 Tagen.';
-    }
-    if (daysBefore == 3) {
-      return '$typeLabel in 3 Tagen. Bitte zeitnah prüfen.';
-    }
-    if (daysBefore == 1) {
-      return '$typeLabel ist morgen fällig.';
-    }
-    return '$typeLabel in $daysBefore Tagen.';
+    return '$typeLabel ist heute fällig.';
   }
 
   Future<void> _scheduleNotification({
@@ -276,6 +273,5 @@ class NotificationService {
 
   void _onNotificationTapped(NotificationResponse response) {
     // TODO: Navigate to deadline details when notification is tapped
-    // This would require a global navigation key or a callback
   }
 }

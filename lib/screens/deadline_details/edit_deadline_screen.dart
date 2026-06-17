@@ -3,9 +3,14 @@ import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
 import '../../models/deadline.dart';
 import '../../models/deadline_category.dart';
+import '../../models/recurrence.dart';
+import '../../models/reminder.dart';
 import '../../providers/deadline_provider.dart';
+import '../../providers/app_state_provider.dart';
 import '../../utils/date_utils.dart';
 import '../../widgets/primary_button.dart';
+import '../../widgets/recurrence_selector.dart';
+import '../../widgets/reminder_selector.dart';
 
 class EditDeadlineScreen extends StatefulWidget {
   final Deadline deadline;
@@ -29,7 +34,9 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
   late TextEditingController _notesController;
   late DateTime _dueDate;
   late DeadlineCategory _category;
-  late Set<int> _reminders;
+  late RecurrenceType _recurrence;
+  late CustomRecurrence? _customRecurrence;
+  late List<Reminder> _flexibleReminders;
 
   @override
   void initState() {
@@ -41,7 +48,18 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
         TextEditingController(text: widget.deadline.notes ?? '');
     _dueDate = widget.deadline.dueDate;
     _category = widget.deadline.category;
-    _reminders = Set.from(widget.deadline.reminders);
+    _recurrence = widget.deadline.recurrence;
+    _customRecurrence = widget.deadline.customRecurrence;
+
+    // Initialize flexible reminders from the deadline
+    if (widget.deadline.flexibleReminders.isNotEmpty) {
+      _flexibleReminders = List.from(widget.deadline.flexibleReminders);
+    } else {
+      // Convert legacy reminders
+      _flexibleReminders = widget.deadline.reminders
+          .map((days) => Reminder.fromDaysBefore(days))
+          .toList();
+    }
   }
 
   @override
@@ -55,6 +73,13 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
   Future<void> _save() async {
     if (_nameController.text.isEmpty) return;
 
+    // Convert flexible reminders to legacy format for backward compat
+    final legacyReminders = _flexibleReminders
+        .where((r) => r.daysBefore != null)
+        .map((r) => r.daysBefore!)
+        .toList()
+      ..sort((a, b) => b.compareTo(a));
+
     final updated = widget.deadline.copyWith(
       title: _nameController.text,
       provider: _providerController.text.isEmpty
@@ -63,7 +88,10 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
       category: _category,
       dueDate: _dueDate,
       notes: _notesController.text.isEmpty ? null : _notesController.text,
-      reminders: _reminders.toList()..sort((a, b) => b.compareTo(a)),
+      reminders: legacyReminders.isNotEmpty ? legacyReminders : const [30, 7],
+      flexibleReminders: _flexibleReminders,
+      recurrence: _recurrence,
+      customRecurrence: _customRecurrence,
     );
 
     await context.read<DeadlineProvider>().updateDeadline(updated);
@@ -81,6 +109,9 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppStateProvider>();
+    final isPremium = appState.isPremium;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -136,8 +167,9 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
                         : AppColors.cardOf(context),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color:
-                          isSelected ? AppColors.primaryOf(context) : AppColors.dividerOf(context),
+                      color: isSelected
+                          ? AppColors.primaryOf(context)
+                          : AppColors.dividerOf(context),
                     ),
                   ),
                   child: Row(
@@ -192,8 +224,8 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
             },
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 16),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               decoration: BoxDecoration(
                 color: AppColors.cardOf(context),
                 borderRadius: BorderRadius.circular(12),
@@ -233,22 +265,54 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
               hintText: 'z. B. Vodafone',
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
+
+          // Wiederholung
+          const Divider(),
+          const SizedBox(height: 16),
+          RecurrenceSelector(
+            selected: _recurrence,
+            customRecurrence: _customRecurrence,
+            isPremium: isPremium,
+            onChanged: (type) => setState(() => _recurrence = type),
+            onCustomChanged: (custom) =>
+                setState(() => _customRecurrence = custom),
+            onPremiumTap: () {
+              // Navigate to premium screen
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                      'Diese Funktion ist mit FristFix Premium verfügbar.'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 16),
 
           // Erinnerungen
-          Text(
-            'Erinnerungen',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textOf(context),
-            ),
+          ReminderSelector(
+            selectedReminders: _flexibleReminders,
+            isPremium: isPremium,
+            onChanged: (reminders) =>
+                setState(() => _flexibleReminders = reminders),
+            onPremiumTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                      'Erweiterte Erinnerungen sind mit Premium verfügbar.'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
           ),
-          const SizedBox(height: 8),
-          _buildReminderToggle(90, '90 Tage vorher'),
-          _buildReminderToggle(30, '30 Tage vorher'),
-          _buildReminderToggle(7, '7 Tage vorher'),
-          const SizedBox(height: 20),
+
+          const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 16),
 
           // Notiz
           Text(
@@ -284,57 +348,6 @@ class _EditDeadlineScreenState extends State<EditDeadlineScreen> {
           ),
           const SizedBox(height: 40),
         ],
-      ),
-    );
-  }
-
-  Widget _buildReminderToggle(int days, String label) {
-    final isSelected = _reminders.contains(days);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            if (isSelected) {
-              _reminders.remove(days);
-            } else {
-              _reminders.add(days);
-            }
-          });
-        },
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.primaryLightOf(context)
-                : AppColors.cardOf(context),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isSelected ? AppColors.primaryOf(context) : AppColors.dividerOf(context),
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                isSelected
-                    ? Icons.check_box
-                    : Icons.check_box_outline_blank,
-                color: isSelected ? AppColors.primaryOf(context) : AppColors.mutedOf(context),
-                size: 22,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textOf(context),
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

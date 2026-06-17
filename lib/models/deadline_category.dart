@@ -10,6 +10,7 @@ enum DeadlineCategory {
   steuer('Steuer', Icons.receipt_long_outlined),
   schuleKita('Schule & Kita', Icons.school_outlined),
   gesundheit('Gesundheit', Icons.favorite_outline),
+  fitnessWellness('Fitness & Wellness', Icons.fitness_center_outlined),
   sonstiges('Sonstiges', Icons.more_horiz);
 
   final String label;

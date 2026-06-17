@@ -181,24 +181,60 @@ class DeadlineDetailsScreen extends StatelessWidget {
                     : '${deadline.reminders.length} aktiv – ${AppDateUtils.reminderText(deadline.reminders)}',
               ),
 
+              // Recurrence info
+              if (deadline.isRecurring) ...[
+                const SizedBox(height: 12),
+                _buildInfoCard(
+                  context,
+                  icon: Icons.repeat,
+                  label: 'Wiederholung',
+                  value: deadline.recurrenceLabel,
+                ),
+              ],
+
               const SizedBox(height: 32),
 
               // Actions
               if (!deadline.isCompleted)
                 PrimaryButton(
-                  label: 'Als erledigt markieren',
+                  label: deadline.isRecurring
+                      ? 'Erledigt – nächste Frist erstellen'
+                      : 'Als erledigt markieren',
                   onPressed: () {
                     provider.markAsCompleted(deadline.id);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
-                            'Erledigt. Diese Frist wurde archiviert.'),
+                          deadline.isRecurring
+                              ? 'Erledigt. Nächste Frist wurde erstellt.'
+                              : 'Erledigt. Diese Frist wurde archiviert.',
+                        ),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
-                    onBack();
+                    if (!deadline.isRecurring) onBack();
                   },
                 ),
+
+              if (!deadline.isCompleted && deadline.isRecurring) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      provider.stopRecurrence(deadline.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Wiederholung beendet.'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+                    child: const Text('Wiederholung beenden'),
+                  ),
+                ),
+              ],
 
               if (!deadline.isCompleted) const SizedBox(height: 12),
 

@@ -88,6 +88,22 @@ class DeadlineCard extends StatelessWidget {
                         color: _statusColor(context),
                       ),
                     ),
+                    if (deadline.isRecurring) ...[
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.repeat,
+                        size: 14,
+                        color: AppColors.primaryOf(context),
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        deadline.recurrenceLabel,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.primaryOf(context),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ],

@@ -122,8 +122,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: appState.isPremium ? 'Premium ist aktiv' : null, onTap: widget.onOpenPremium),
           if (!appState.isPremium)
             _item(context, Icons.restore, 'Käufe wiederherstellen', onTap: () => _handleRestore(context, appState)),
-          if (!appState.isPremium)
-            _item(context, Icons.card_giftcard_outlined, 'Code einlösen', onTap: () => _showPromoCodeDialog(context, appState)),
 
           const SizedBox(height: 24),
 
@@ -302,43 +300,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }, child: Text('Konto löschen', style: TextStyle(color: AppColors.criticalOf(context)))),
       ],
     ));
-  }
-
-  void _showPromoCodeDialog(BuildContext context, AppStateProvider appState) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Code einlösen'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          autocorrect: false,
-          decoration: const InputDecoration(hintText: 'Code eingeben'),
-          textCapitalization: TextCapitalization.characters,
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Abbrechen')),
-          TextButton(
-            onPressed: () {
-              final code = controller.text.trim().toUpperCase();
-              Navigator.of(ctx).pop();
-              if (code == 'FRISTFIX2026' || code == 'FRISTFIXPRO' || code == 'GRETAUNDLIA') {
-                appState.activatePromoCode();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Premium aktiviert! Vielen Dank.')),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Ungültiger Code.')),
-                );
-              }
-            },
-            child: const Text('Einlösen'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showDeleteDataDialog(BuildContext context) {

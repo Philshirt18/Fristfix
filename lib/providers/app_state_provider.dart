@@ -125,10 +125,4 @@ class AppStateProvider extends ChangeNotifier {
     await _storage.setBackupEnabled(value);
     notifyListeners();
   }
-
-  /// Activate premium via promo code (bypasses payment).
-  Future<void> activatePromoCode() async {
-    await _storage.setIsPremiumCache(true);
-    notifyListeners();
-  }
 }

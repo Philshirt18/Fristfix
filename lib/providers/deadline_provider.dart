@@ -4,9 +4,12 @@ import '../models/deadline.dart';
 import '../models/deadline_category.dart';
 import '../models/deadline_type.dart';
 import '../models/deadline_status.dart';
+import '../models/recurrence.dart';
+import '../models/reminder.dart';
 import '../data/local_deadline_repository.dart';
 import '../services/sync_service.dart';
 import '../services/notification_service.dart';
+import '../services/recurrence_service.dart';
 
 /// Manages deadline state. Uses local Hive storage as primary source.
 /// Optionally syncs to cloud via SyncService when backup is enabled.
@@ -14,6 +17,7 @@ class DeadlineProvider extends ChangeNotifier {
   final LocalDeadlineRepository _localRepo;
   final SyncService _syncService;
   final NotificationService _notificationService;
+  final RecurrenceService _recurrenceService = const RecurrenceService();
 
   List<Deadline> _deadlines = [];
   bool _isLoading = false;
@@ -54,6 +58,10 @@ class DeadlineProvider extends ChangeNotifier {
 
   bool get hasCriticalDeadlines => criticalDeadlines.isNotEmpty;
 
+  /// Get all recurring deadlines.
+  List<Deadline> get recurringDeadlines =>
+      _deadlines.where((d) => d.isRecurring && !d.isArchived).toList();
+
   List<Deadline> filterByCategory(DeadlineCategory category) =>
       activeDeadlines.where((d) => d.category == category).toList();
 
@@ -82,6 +90,9 @@ class DeadlineProvider extends ChangeNotifier {
     DateTime? cancellationDate,
     String? notes,
     List<int> reminders = const [90, 30, 7],
+    List<Reminder> flexibleReminders = const [],
+    RecurrenceType recurrence = RecurrenceType.none,
+    CustomRecurrence? customRecurrence,
   }) async {
     final now = DateTime.now();
     final deadline = Deadline(
@@ -95,6 +106,9 @@ class DeadlineProvider extends ChangeNotifier {
       cancellationDate: cancellationDate,
       notes: notes,
       reminders: reminders,
+      flexibleReminders: flexibleReminders,
+      recurrence: recurrence,
+      customRecurrence: customRecurrence,
       createdAt: now,
       updatedAt: now,
     );
@@ -119,17 +133,57 @@ class DeadlineProvider extends ChangeNotifier {
     }
   }
 
+  /// Mark a deadline as completed.
+  /// For recurring deadlines: advances to the next occurrence instead of archiving.
   Future<void> markAsCompleted(String id) async {
     final index = _deadlines.indexWhere((d) => d.id == id);
     if (index != -1) {
+      final deadline = _deadlines[index];
+
+      if (deadline.isRecurring) {
+        // Recurring: advance to next occurrence
+        await _advanceRecurringDeadline(index);
+      } else {
+        // One-time: mark as completed
+        final updated = deadline.copyWith(
+          isCompleted: true,
+          updatedAt: DateTime.now(),
+        );
+        _deadlines[index] = updated;
+        await _localRepo.save(updated);
+        await _syncService.syncDeadline(updated);
+        await _notificationService.cancelAllRemindersForDeadline(updated);
+      }
+      notifyListeners();
+    }
+  }
+
+  /// Advance a recurring deadline to its next occurrence.
+  Future<void> _advanceRecurringDeadline(int index) async {
+    final current = _deadlines[index];
+    await _notificationService.cancelAllRemindersForDeadline(current);
+
+    // Create next occurrence with new due date
+    final next = _recurrenceService.createNextOccurrence(current);
+    _deadlines[index] = next;
+
+    await _localRepo.save(next);
+    await _syncService.syncDeadline(next);
+    await _notificationService.scheduleDeadlineReminders(next);
+  }
+
+  /// Stop a recurring deadline (set recurrence to none).
+  Future<void> stopRecurrence(String id) async {
+    final index = _deadlines.indexWhere((d) => d.id == id);
+    if (index != -1) {
       final updated = _deadlines[index].copyWith(
-        isCompleted: true,
+        recurrence: RecurrenceType.none,
+        customRecurrence: null,
         updatedAt: DateTime.now(),
       );
       _deadlines[index] = updated;
       await _localRepo.save(updated);
       await _syncService.syncDeadline(updated);
-      await _notificationService.cancelAllRemindersForDeadline(updated);
       notifyListeners();
     }
   }
