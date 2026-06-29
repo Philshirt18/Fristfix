@@ -49,14 +49,43 @@ class RecurrenceService {
     return deadline.isRecurring && deadline.isCompleted;
   }
 
+  /// Calculate the next future occurrence date for a recurring deadline
+  /// whose dueDate may be in the past. Advances until we find a future date.
+  DateTime calculateNextFutureOccurrence(Deadline deadline) {
+    if (!deadline.isRecurring) return deadline.dueDate;
+
+    var nextDate = deadline.dueDate;
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+
+    // Advance until we get a date that is today or in the future
+    int safety = 0;
+    while (DateTime(nextDate.year, nextDate.month, nextDate.day)
+            .isBefore(todayDate) &&
+        safety < 1000) {
+      final temp = deadline.copyWith(dueDate: nextDate);
+      nextDate = calculateNextOccurrence(temp);
+      safety++;
+    }
+
+    return nextDate;
+  }
+
   /// Calculate all reminder DateTimes for a given deadline.
+  /// For recurring deadlines whose dueDate is past, calculates reminders
+  /// based on the next future occurrence.
   /// Returns a list of DateTime objects when reminders should fire.
   List<DateTime> calculateReminderDates(Deadline deadline) {
     final reminders = deadline.effectiveReminders;
     final dates = <DateTime>[];
 
+    // For recurring deadlines, use the next future due date
+    final effectiveDueDate = deadline.isRecurring
+        ? calculateNextFutureOccurrence(deadline)
+        : deadline.dueDate;
+
     for (final reminder in reminders) {
-      final date = _reminderToDateTime(reminder, deadline.dueDate);
+      final date = _reminderToDateTime(reminder, effectiveDueDate);
       if (date != null && date.isAfter(DateTime.now())) {
         dates.add(date);
       }

@@ -58,12 +58,75 @@ class Deadline {
     this.isArchived = false,
   });
 
+  /// For recurring deadlines whose due date is past, calculate the next
+  /// future occurrence for display purposes.
+  DateTime get effectiveDueDate {
+    if (!isRecurring) return dueDate;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final due = DateTime(dueDate.year, dueDate.month, dueDate.day);
+
+    if (!due.isBefore(today)) return dueDate;
+
+    // Advance until we get a future date
+    var nextDate = dueDate;
+    int safety = 0;
+    while (DateTime(nextDate.year, nextDate.month, nextDate.day)
+            .isBefore(today) &&
+        safety < 1000) {
+      switch (recurrence) {
+        case RecurrenceType.none:
+          return nextDate;
+        case RecurrenceType.weekly:
+          nextDate = nextDate.add(const Duration(days: 7));
+        case RecurrenceType.monthly:
+          nextDate = _addMonthsStatic(nextDate, 1);
+        case RecurrenceType.halfYearly:
+          nextDate = _addMonthsStatic(nextDate, 6);
+        case RecurrenceType.yearly:
+          nextDate = _addMonthsStatic(nextDate, 12);
+        case RecurrenceType.custom:
+          if (customRecurrence != null) {
+            switch (customRecurrence!.unit) {
+              case RecurrenceUnit.days:
+                nextDate =
+                    nextDate.add(Duration(days: customRecurrence!.interval));
+              case RecurrenceUnit.weeks:
+                nextDate = nextDate
+                    .add(Duration(days: customRecurrence!.interval * 7));
+              case RecurrenceUnit.months:
+                nextDate =
+                    _addMonthsStatic(nextDate, customRecurrence!.interval);
+              case RecurrenceUnit.years:
+                nextDate =
+                    _addMonthsStatic(nextDate, customRecurrence!.interval * 12);
+            }
+          } else {
+            return nextDate;
+          }
+      }
+      safety++;
+    }
+    return nextDate;
+  }
+
+  static DateTime _addMonthsStatic(DateTime date, int months) {
+    final newMonth = date.month + months;
+    final year = date.year + (newMonth - 1) ~/ 12;
+    final month = ((newMonth - 1) % 12) + 1;
+    final lastDay = DateTime(year, month + 1, 0).day;
+    final day = date.day > lastDay ? lastDay : date.day;
+    return DateTime(year, month, day, date.hour, date.minute);
+  }
+
   DeadlineStatus get status {
     if (isCompleted) return DeadlineStatus.erledigt;
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final due = DateTime(dueDate.year, dueDate.month, dueDate.day);
+    final due = DateTime(
+        effectiveDueDate.year, effectiveDueDate.month, effectiveDueDate.day);
     final daysLeft = due.difference(today).inDays;
 
     if (daysLeft < 0) return DeadlineStatus.bittePruefen;
@@ -75,7 +138,8 @@ class Deadline {
   int get daysRemaining {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final due = DateTime(dueDate.year, dueDate.month, dueDate.day);
+    final due = DateTime(
+        effectiveDueDate.year, effectiveDueDate.month, effectiveDueDate.day);
     return due.difference(today).inDays;
   }
 

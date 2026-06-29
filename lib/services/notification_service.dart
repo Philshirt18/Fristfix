@@ -121,11 +121,15 @@ class NotificationService {
       );
     }
 
-    // Also schedule a notification on the due date itself
+    // Also schedule a notification on the due date itself.
+    // For recurring deadlines, use the next future due date.
+    final effectiveDueDate = deadline.isRecurring
+        ? _recurrenceService.calculateNextFutureOccurrence(deadline)
+        : deadline.dueDate;
     final dueDateTime = DateTime(
-      deadline.dueDate.year,
-      deadline.dueDate.month,
-      deadline.dueDate.day,
+      effectiveDueDate.year,
+      effectiveDueDate.month,
+      effectiveDueDate.day,
       9,
       0,
     );

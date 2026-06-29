@@ -8,6 +8,7 @@ import 'services/local_storage_service.dart';
 import 'services/firebase_auth_service.dart';
 import 'services/revenuecat_payment_service.dart';
 import 'services/notification_service.dart';
+import 'services/background_service.dart';
 import 'services/sync_service.dart';
 import 'data/local_deadline_repository.dart';
 import 'data/remote_deadline_repository.dart';
@@ -59,6 +60,13 @@ void main() async {
     await notificationService.requestPermission();
   } catch (_) {
     // Notification init failed – not critical
+  }
+
+  // Initialize background task for recurring notification refresh
+  try {
+    await BackgroundService.initialize();
+  } catch (_) {
+    // Background service init failed – not critical
   }
 
   // Remote repository (no user yet – will be updated after login)

@@ -76,8 +76,50 @@ class DeadlineProvider extends ChangeNotifier {
 
     _deadlines = await _localRepo.getAll();
 
+    // Auto-advance recurring deadlines whose due date is in the past
+    await _autoAdvanceRecurringDeadlines();
+
     _isLoading = false;
     notifyListeners();
+  }
+
+  /// Automatically advance recurring deadlines whose due date has passed.
+  /// This ensures notifications get rescheduled for the next occurrence
+  /// even if the user didn't explicitly mark the deadline as completed.
+  Future<void> _autoAdvanceRecurringDeadlines() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    for (int i = 0; i < _deadlines.length; i++) {
+      final deadline = _deadlines[i];
+      if (!deadline.isRecurring || deadline.isCompleted || deadline.isArchived) {
+        continue;
+      }
+
+      final dueDay = DateTime(
+        deadline.dueDate.year,
+        deadline.dueDate.month,
+        deadline.dueDate.day,
+      );
+
+      if (dueDay.isBefore(today)) {
+        // Advance to the next future occurrence
+        await _notificationService.cancelAllRemindersForDeadline(deadline);
+
+        final nextDueDate =
+            _recurrenceService.calculateNextFutureOccurrence(deadline);
+        final updated = deadline.copyWith(
+          dueDate: nextDueDate,
+          isCompleted: false,
+          updatedAt: DateTime.now(),
+        );
+
+        _deadlines[i] = updated;
+        await _localRepo.save(updated);
+        await _syncService.syncDeadline(updated);
+        await _notificationService.scheduleDeadlineReminders(updated);
+      }
+    }
   }
 
   Future<void> addDeadline({
