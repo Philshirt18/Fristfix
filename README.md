@@ -85,11 +85,13 @@ FristFix was designed and shipped by Philipp Schaefer using an AI-native workflo
 
 ## Screenshots
 
-_Store screenshots and marketing assets live in `Pics/`. Add or link representative in-app screenshots here._
-
-| Dashboard | Add Deadline | Calendar | Premium |
-|-----------|--------------|----------|---------|
-| _(screenshot)_ | _(screenshot)_ | _(screenshot)_ | _(screenshot)_ |
+<p align="center">
+  <img src="docs/screenshots/screenshot-1.png" width="18%" alt="FristFix screenshot" />
+  <img src="docs/screenshots/screenshot-2.png" width="18%" alt="FristFix screenshot" />
+  <img src="docs/screenshots/screenshot-3.png" width="18%" alt="FristFix screenshot" />
+  <img src="docs/screenshots/screenshot-4.png" width="18%" alt="FristFix screenshot" />
+  <img src="docs/screenshots/screenshot-5.png" width="18%" alt="FristFix screenshot" />
+</p>
 
 ## Status & Roadmap
 
