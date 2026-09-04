@@ -77,7 +77,11 @@ class DeadlineProvider extends ChangeNotifier {
     _deadlines = await _localRepo.getAll();
 
     // Auto-advance recurring deadlines whose due date is in the past
-    await _autoAdvanceRecurringDeadlines();
+    try {
+      await _autoAdvanceRecurringDeadlines();
+    } catch (e) {
+      debugPrint('Auto-advance failed: $e');
+    }
 
     _isLoading = false;
     notifyListeners();

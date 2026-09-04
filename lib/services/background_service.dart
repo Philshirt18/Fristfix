@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint, defaultTargetPlatform, TargetPlatform;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -197,6 +197,11 @@ class BackgroundService {
   /// Should be called after WidgetsFlutterBinding.ensureInitialized().
   static Future<void> initialize() async {
     if (kIsWeb) return;
+
+    // iOS BGTaskScheduler requires native handler registration inside
+    // didFinishLaunchingWithOptions, which Dart code cannot satisfy in time.
+    // Skip on iOS to avoid the "No launch handler registered" crash.
+    if (defaultTargetPlatform == TargetPlatform.iOS) return;
 
     await Workmanager().initialize(
       callbackDispatcher,

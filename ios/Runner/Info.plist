@@ -79,14 +79,5 @@
 				</array>
 			</dict>
 		</array>
-		<key>UIBackgroundModes</key>
-		<array>
-			<string>fetch</string>
-			<string>processing</string>
-		</array>
-		<key>BGTaskSchedulerPermittedIdentifiers</key>
-		<array>
-			<string>de.fristfix.refreshNotifications</string>
-		</array>
 	</dict>
 </plist>

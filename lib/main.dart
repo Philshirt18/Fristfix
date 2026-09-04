@@ -17,23 +17,30 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Initialize Firebase (required for auth/firestore)
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ).timeout(const Duration(seconds: 10));
+  } catch (e) {
+    debugPrint('Firebase init failed: $e');
+  }
 
   // Initialize Hive for local deadline storage
   try {
-    await Hive.initFlutter();
+    await Hive.initFlutter().timeout(const Duration(seconds: 5));
   } catch (e) {
-    // Hive may fail in restricted environments (e.g. Incognito mode)
-    // App will still work but local storage may be limited
     debugPrint('Hive init failed: $e');
   }
 
   // Initialize SharedPreferences for app settings
-  final prefs = await SharedPreferences.getInstance();
-  final storageService = LocalStorageService(prefs);
+  SharedPreferences? prefs;
+  try {
+    prefs = await SharedPreferences.getInstance().timeout(const Duration(seconds: 5));
+  } catch (e) {
+    debugPrint('SharedPreferences init failed: $e');
+  }
+  final storageService = LocalStorageService(prefs ?? (await SharedPreferences.getInstance()));
 
   // Initialize local deadline repository
   final localDeadlineRepo = LocalDeadlineRepository();
@@ -54,22 +61,7 @@ void main() async {
   final paymentService = RevenueCatPaymentService();
   final notificationService = NotificationService();
 
-  // Initialize notifications (no-op on web)
-  try {
-    await notificationService.initialize();
-    await notificationService.requestPermission();
-  } catch (_) {
-    // Notification init failed – not critical
-  }
-
-  // Initialize background task for recurring notification refresh
-  try {
-    await BackgroundService.initialize();
-  } catch (_) {
-    // Background service init failed – not critical
-  }
-
-  // Remote repository (no user yet – will be updated after login)
+  // Remote repository
   final remoteDeadlineRepo = RemoteDeadlineRepository();
 
   // Sync service
@@ -78,13 +70,14 @@ void main() async {
     remote: remoteDeadlineRepo,
   );
 
-  // Initialize RevenueCat (non-blocking)
+  // Initialize WorkManager early (iOS requires BGTask handler registration at launch)
   try {
-    await paymentService.initialize().timeout(const Duration(seconds: 5));
-  } catch (_) {
-    // RevenueCat init failed or timed out – app continues with free tier
+    await BackgroundService.initialize().timeout(const Duration(seconds: 3));
+  } catch (e) {
+    debugPrint('BackgroundService init failed: $e');
   }
 
+  // Launch app immediately – defer non-critical init
   runApp(FristFixApp(
     storageService: storageService,
     localDeadlineRepo: localDeadlineRepo,
@@ -93,4 +86,27 @@ void main() async {
     notificationService: notificationService,
     syncService: syncService,
   ));
+
+  // Deferred initialization (after UI is showing)
+  _deferredInit(notificationService, paymentService);
+}
+
+/// Non-critical initialization that runs after the UI is visible.
+Future<void> _deferredInit(
+  NotificationService notificationService,
+  RevenueCatPaymentService paymentService,
+) async {
+  // Small delay to let UI render first
+  await Future.delayed(const Duration(milliseconds: 500));
+
+  // Notifications
+  try {
+    await notificationService.initialize().timeout(const Duration(seconds: 5));
+    await notificationService.requestPermission().timeout(const Duration(seconds: 3));
+  } catch (_) {}
+
+  // RevenueCat
+  try {
+    await paymentService.initialize().timeout(const Duration(seconds: 5));
+  } catch (_) {}
 }
